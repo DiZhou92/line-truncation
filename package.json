@@ -1,0 +1,24 @@
+{
+  "name": "line-truncation",
+  "version": "0.0.1",
+  "description": "Line Truncation is a zero dependency tool that truncate text by user defined line number",
+  "keywords": [
+    "line truncation",
+    "line clamp",
+    "shave",
+    "truncate",
+    "line truncation",
+    "line clamp",
+    "shave",
+    "ellipsis",
+    "text",
+    "html",
+    "dom"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Di Zhou",
+  "license": "MIT"
+}
