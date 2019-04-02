@@ -1,24 +1,29 @@
 {
   "name": "line-truncation",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "scripts": {
+    "clean": "rimraf lib",
+    "build": "cross-env BABEL_ENV=production babel src --out-dir lib"
+  },
   "description": "Line Truncation is a zero dependency tool that truncate text by user defined line number",
   "keywords": [
-    "line truncation",
-    "line clamp",
-    "shave",
-    "truncate",
-    "line truncation",
-    "line clamp",
-    "shave",
     "ellipsis",
-    "text",
-    "html",
-    "dom"
+    "truncation",
+    "truncate",
+    "truncated",
+    "shave",
+    "js",
+    "content",
+    "line clamp",
+    "javascript",
+    "shorten",
+    "trim"
   ],
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Di Zhou",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "main": "./lib/index.js",
+  "author": "Di Zhou <chaodyz@gmail.com>",
   "license": "MIT"
 }
