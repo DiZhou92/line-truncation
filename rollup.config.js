@@ -1,14 +1,11 @@
-export default [
-  createConfig({
-    input: 'src/shave.js',
-    output: [{ file: main, format: 'umd' }, { file: module, format: 'es' }],
-  }),
-  createConfig({
-    input: 'src/shave.js',
-    output: {
-      file: 'dist/shave.min.js',
-      format: 'umd',
-    },
-    env: 'production',
-  }),
-];
+import typescript from 'rollup-plugin-typescript';
+
+export default {
+  input: 'src/index.ts',
+  output: {
+    file: 'bundle.js',
+    name: 'LineTruncation',
+    format: 'umd',
+  },
+  plugins: [typescript()],
+};

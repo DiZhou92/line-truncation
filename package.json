@@ -1,9 +1,8 @@
 {
   "name": "line-truncation",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "scripts": {
-    "clean": "rimraf lib",
-    "build": "cross-env BABEL_ENV=production babel src --out-dir lib"
+    "build": "rollup -c"
   },
   "description": "Line Truncation is a zero dependency tool that truncate text by user defined line number",
   "keywords": [
@@ -23,7 +22,12 @@
     "lib",
     "src"
   ],
-  "main": "./lib/index.js",
+  "main": "bundle.js",
   "author": "Di Zhou <chaodyz@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "rollup-plugin-typescript": "^1.0.1",
+    "tslib": "^1.9.3",
+    "typescript": "^3.4.1"
+  }
 }
