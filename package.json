@@ -1,6 +1,6 @@
 {
   "name": "line-truncation",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "scripts": {
     "build": "rollup -c"
   },
@@ -18,16 +18,18 @@
     "shorten",
     "trim"
   ],
-  "files": [
-    "lib",
-    "src"
-  ],
-  "main": "bundle.js",
+  "main": "dist/bundle.js",
   "author": "Di Zhou <chaodyz@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DiZhou92/line-truncation"
+  },
   "devDependencies": {
-    "rollup-plugin-typescript": "^1.0.1",
-    "tslib": "^1.9.3",
-    "typescript": "^3.4.1"
+    "@babel/core": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
+    "rollup-plugin-babel": "^4.3.2",
+    "rollup-plugin-node-resolve": "^4.0.1",
+    "rollup-plugin-uglify": "^6.0.2"
   }
 }

@@ -1,11 +1,20 @@
-import typescript from 'rollup-plugin-typescript';
+// rollup.config.js
+import resolve from 'rollup-plugin-node-resolve';
+import babel from 'rollup-plugin-babel';
+import { uglify } from 'rollup-plugin-uglify';
 
 export default {
-  input: 'src/index.ts',
+  input: 'src/index.js',
   output: {
-    file: 'bundle.js',
+    file: 'dist/bundle.js',
     name: 'LineTruncation',
     format: 'umd',
   },
-  plugins: [typescript()],
+  plugins: [
+    resolve(),
+    babel({
+      exclude: 'node_modules/**', // only transpile our source code
+    }),
+    // uglify(),
+  ],
 };

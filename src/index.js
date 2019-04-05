@@ -3,24 +3,24 @@
  *  adapted our own solution for better performance
  */
 
-interface Returns {
-  hasTruncated: boolean;
-  errorMessages?: any[];
-}
 const NODE_TYPE_ELEMENT = 1; // Javascript ELEMENT_NODE constant
 const NODE_TYPE_TEXT = 3; // Javascript TEXT_NODE constant
 const TRAILING_WHITESPACE_AND_PUNCTUATION_REGEX = /[ .,;!?'‘’“”\-–—\n]+$/;
 const TRIES = 10;
-let ellipsisCharacter = '\u2026';
+let ellipsisCharacter = '\u2026',
+  errors = [];
 
 export function truncateWhenNecessary(
-  element: HTMLElement,
-  lines: number,
-  tries: number,
-  ellipsis: string = ellipsisCharacter,
-  callback?: (returns?: Returns) => void
+  element,
+  lines,
+  tries = TRIES,
+  ellipsis = ellipsisCharacter,
+  callback = () => {}
 ) {
-  let errors = [];
+  if (!lines || !element) {
+    return;
+  }
+
   ellipsisCharacter = ellipsis;
 
   if (tries > 0) {
@@ -28,16 +28,16 @@ export function truncateWhenNecessary(
     setTimeout(() => {
       const clientHeight = element.clientHeight;
 
-      /**
-       * Recursively call the truncate itself if Client Height is not ready
-       */
+      //Recursively call the truncate itself if Client Height is not ready
       if (clientHeight > 0) {
         const contentHeight = getContentHeight(element);
         const lineHeight = getLineHeight(element);
-        const targetHeight = lines * lineHeight;
-
-        if (contentHeight > targetHeight) {
-          if (Math.floor(contentHeight / 2) > targetHeight) {
+        const truncateHeight = lines * lineHeight;
+        // height checking, if content overflows truncate
+        if (contentHeight > truncateHeight) {
+          // figuring truncating strategy
+          if (Math.floor(contentHeight / 2) > truncateHeight) {
+            // empty root element, move all the child nodes to an array instance
             const childNodes = [];
             while (element.firstChild) {
               childNodes.push(element.removeChild(element.firstChild));
@@ -48,11 +48,11 @@ export function truncateWhenNecessary(
             callback({ hasTruncated: truncateElementNode(element, element, lines, lineHeight) });
           }
         } else {
-          callback({ hasTruncated: true });
+          callback({ hasTruncated: false });
         }
       } else {
         errors.push(`${11 - tries} time truncation try for element:${element.tagName}`);
-        this.truncateWhenNecessary(element, --tries);
+        truncateWhenNecessary(element, --tries);
       }
     }, 100);
   } else {
@@ -68,7 +68,7 @@ export function truncateWhenNecessary(
  * @param lines number of truncate lines
  * @param lineHeight  text line height
  */
-function appendElementNode(childNodes, rootElement, lines, lineHeight): boolean {
+function appendElementNode(childNodes, rootElement, lines, lineHeight) {
   const truncateHeight = lines * lineHeight;
   let i = 0;
 
@@ -100,7 +100,7 @@ function appendElementNode(childNodes, rootElement, lines, lineHeight): boolean 
   return false;
 }
 
-function truncateElementNode(element, rootElement, lines, lineHeight): boolean {
+function truncateElementNode(element, rootElement, lines, lineHeight) {
   const childNodes = element.childNodes;
   const truncateHeight = lines * lineHeight;
   let i = childNodes.length - 1;
@@ -141,7 +141,7 @@ function truncateElementNode(element, rootElement, lines, lineHeight): boolean {
  * @param rootElement The root node.
  * @param truncateHeight The desired height.
  */
-function truncateTextNode(textNode, rootElement, truncateHeight): boolean {
+function truncateTextNode(textNode, rootElement, truncateHeight) {
   textNode.textContent = textNode.textContent.replace(TRAILING_WHITESPACE_AND_PUNCTUATION_REGEX, '');
   if (textNode.textContent === '') {
     return true;
@@ -173,7 +173,7 @@ function truncateTextNode(textNode, rootElement, truncateHeight): boolean {
  * @param rootElement The root node.
  * @param truncateHeight The desired height.
  */
-function truncateTextNodeByCharacter(textNode, rootElement, truncateHeight): boolean {
+function truncateTextNodeByCharacter(textNode, rootElement, truncateHeight) {
   let currentLength = textNode.textContent.length;
 
   while (currentLength > 0) {
@@ -221,12 +221,12 @@ function addEllipsis(rootElement, truncateHeight) {
  */
 function getLastElementThatHasText(element) {
   if (!element.hasChildNodes()) {
-    throw Error('Must have child node');
+    errors.push('Must have child node');
   }
   return element.lastChild.nodeType === NODE_TYPE_TEXT ? element : getLastElementThatHasText(element.lastChild);
 }
 
-function getContentHeight(element: HTMLElement) {
+function getContentHeight(element) {
   const computedStyle = getComputedStyle(element);
   if (!(computedStyle.paddingTop || computedStyle.paddingBottom)) {
     return element.clientHeight;
