@@ -30,11 +30,13 @@
       adipisci similique, ipsam cupiditate fugit explicabo facilis eaque! Mollitia excepturi sequi ipsum error.
     </p>
 
-    <script src="../bundle.js"></script>
+    <script src="../dist/bundle.js"></script>
     <script>
       var text = document.querySelector('p#example');
-      console.log(text)
-      LineTruncation.truncateWhenNecessary(text, 2,10);
+      var lineHeight = text.clientHeight;
+      
+      LineTruncation.truncate(text, 2);
+      
     </script>
   </body>
 </html>

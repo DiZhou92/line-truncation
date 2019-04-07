@@ -6,58 +6,53 @@
 const NODE_TYPE_ELEMENT = 1; // Javascript ELEMENT_NODE constant
 const NODE_TYPE_TEXT = 3; // Javascript TEXT_NODE constant
 const TRAILING_WHITESPACE_AND_PUNCTUATION_REGEX = /[ .,;!?'‘’“”\-–—\n]+$/;
-const TRIES = 10;
-let ellipsisCharacter = '\u2026',
-  errors = [];
+let ellipsisCharacter = '\u2026';
 
-export function truncateWhenNecessary(
-  element,
-  lines,
-  tries = TRIES,
-  ellipsis = ellipsisCharacter,
-  callback = () => {}
-) {
-  if (!lines || !element) {
+/**
+ * Line Truncation driver.
+ * @param rootElement The root element that needs to be truncated.
+ * @param truncateHeight The desired height.
+ * @param options The passed in options by the user.
+ */
+export function truncate(rootElement, lines, ellipsis = ellipsisCharacter, callback = val => {}) {
+  if (!lines || !rootElement) {
     return;
   }
 
-  ellipsisCharacter = ellipsis;
+  const lineHeight = getLineHeight(rootElement);
+  ellipsisCharacter = ellipsis || ellipsisCharacter;
+  const truncateHeight = lines * lineHeight;
 
-  if (tries > 0) {
-    // Allows buffer period for DOM to be ready
-    setTimeout(() => {
-      const clientHeight = element.clientHeight;
+  if (Math.floor(getContentHeight(rootElement) / 2) > truncateHeight) {
+    const childNodes = [];
+    while (rootElement.firstChild) {
+      childNodes.push(rootElement.removeChild(rootElement.firstChild));
+    }
 
-      //Recursively call the truncate itself if Client Height is not ready
-      if (clientHeight > 0) {
-        const contentHeight = getContentHeight(element);
-        const lineHeight = getLineHeight(element);
-        const truncateHeight = lines * lineHeight;
-        // height checking, if content overflows truncate
-        if (contentHeight > truncateHeight) {
-          // figuring truncating strategy
-          if (Math.floor(contentHeight / 2) > truncateHeight) {
-            // empty root element, move all the child nodes to an array instance
-            const childNodes = [];
-            while (element.firstChild) {
-              childNodes.push(element.removeChild(element.firstChild));
-            }
-
-            callback({ hasTruncated: appendElementNode(childNodes, element, lines, lineHeight) });
-          } else {
-            callback({ hasTruncated: truncateElementNode(element, element, lines, lineHeight) });
-          }
-        } else {
-          callback({ hasTruncated: false });
-        }
-      } else {
-        errors.push(`${11 - tries} time truncation try for element:${element.tagName}`);
-        truncateWhenNecessary(element, --tries);
-      }
-    }, 100);
+    callback(appendElementNode(childNodes, rootElement, lines, lineHeight));
   } else {
-    errors.push(`Cannot retrieve item's clientHeight`);
-    callback({ hasTruncated: false, errorMessages: errors });
+    callback(truncateElementNode(rootElement, rootElement, lines, lineHeight));
+  }
+}
+
+export function getContentHeight(element) {
+  const computedStyle = getComputedStyle(element);
+  if (!(computedStyle.paddingTop || computedStyle.paddingBottom)) {
+    return element.clientHeight;
+  }
+  const paddingY = parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
+  return element.clientHeight - paddingY;
+}
+
+export function getLineHeight(element) {
+  const lineHeightComputedStyle = window.getComputedStyle(element).lineHeight;
+
+  if (lineHeightComputedStyle === 'normal') {
+    // Define a fallback for 'normal' value with 1.2 as a line-height
+    // https://www.w3.org/TR/CSS21/visudet.html#normal-block
+    return parseInt(window.getComputedStyle(element).fontSize, 10) * 1.2;
+  } else {
+    return parseInt(lineHeightComputedStyle, 10);
   }
 }
 
@@ -116,7 +111,7 @@ function truncateElementNode(element, rootElement, lines, lineHeight) {
       return true;
     }
 
-    // If removing the element decrese the height beyond the desired height then we know that we need to truncate in
+    // If removing the element decrease the height beyond the desired height then we know that we need to truncate in
     // this element to achieve the desired height
     if (getContentHeight(rootElement) < truncateHeight) {
       const childNodeType = childNode.nodeType;
@@ -221,28 +216,7 @@ function addEllipsis(rootElement, truncateHeight) {
  */
 function getLastElementThatHasText(element) {
   if (!element.hasChildNodes()) {
-    errors.push('Must have child node');
+    throw Error('Must have child node');
   }
   return element.lastChild.nodeType === NODE_TYPE_TEXT ? element : getLastElementThatHasText(element.lastChild);
-}
-
-function getContentHeight(element) {
-  const computedStyle = getComputedStyle(element);
-  if (!(computedStyle.paddingTop || computedStyle.paddingBottom)) {
-    return element.clientHeight;
-  }
-  const paddingY = parseFloat(computedStyle.paddingTop) + parseFloat(computedStyle.paddingBottom);
-  return element.clientHeight - paddingY;
-}
-
-function getLineHeight(elem) {
-  const lineHeightComputedStyle = window.getComputedStyle(elem).lineHeight;
-
-  if (lineHeightComputedStyle === 'normal') {
-    // Define a fallback for 'normal' value with 1.2 as a line-height
-    // https://www.w3.org/TR/CSS21/visudet.html#normal-block
-    return parseInt(window.getComputedStyle(elem).fontSize, 10) * 1.2;
-  } else {
-    return parseInt(lineHeightComputedStyle, 10);
-  }
 }
