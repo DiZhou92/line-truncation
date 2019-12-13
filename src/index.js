@@ -35,6 +35,46 @@ export function truncate(rootElement, lines, ellipsis = ellipsisCharacter, callb
   }
 }
 
+export function truncateWhenNecessary(element, tries = 1, maxTries = 10) {
+
+  /**
+   * This CSS visibility change is for better truncating visual experience
+   */
+  this.setVisibility('hidden');
+  if (tries <= maxTries) {
+    // Allows buffer period for DOM to be ready
+    setTimeout(() => {
+      /**
+       * Recursively call the truncate itself if Client Height is not ready
+       */
+
+      if (element.clientHeight > 0) {
+        const contentHeight = getContentHeight(element);
+        const lineHeight = getLineHeight(element);
+        const targetHeight = this.lines * lineHeight;
+
+        if (contentHeight > targetHeight) {
+          try {
+            truncate(element, this.lines, this.ellipsis, this.handler.bind(this));
+          } catch (error) {
+            console.info(`lineTruncation: ${error}`);
+          }
+        } else {
+          this.setVisibility('visible');
+        }
+      } else {
+        console.info(`LineTruncation: ${tries} time truncation try for element:`, { context: element });
+        this.truncateWhenNecessary(element, ++tries);
+      }
+    }, 100);
+  } else {
+    this.setVisibility('visible');
+    console.info(`[LineTruncation:truncateWhenNecessary()] Cannot retrieve item's clientHeight`, {
+      context: element
+    });
+  }
+}
+
 export function getContentHeight(element) {
   const computedStyle = getComputedStyle(element);
   if (!(computedStyle.paddingTop || computedStyle.paddingBottom)) {
@@ -50,9 +90,9 @@ export function getLineHeight(element) {
   if (lineHeightComputedStyle === 'normal') {
     // Define a fallback for 'normal' value with 1.2 as a line-height
     // https://www.w3.org/TR/CSS21/visudet.html#normal-block
-    return parseInt(window.getComputedStyle(element).fontSize, 10) * 1.2;
+    return parseFloat(window.getComputedStyle(element).fontSize, 10) * 1.2;
   } else {
-    return parseInt(lineHeightComputedStyle, 10);
+    return parseFloat(lineHeightComputedStyle, 10);
   }
 }
 
