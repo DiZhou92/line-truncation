@@ -36,7 +36,6 @@ export function truncate(rootElement, lines, ellipsis = ellipsisCharacter, callb
 }
 
 export function truncateWhenNecessary(element, tries = 1, maxTries = 10) {
-
   /**
    * This CSS visibility change is for better truncating visual experience
    */
@@ -63,14 +62,16 @@ export function truncateWhenNecessary(element, tries = 1, maxTries = 10) {
           this.setVisibility('visible');
         }
       } else {
-        console.info(`LineTruncation: ${tries} time truncation try for element:`, { context: element });
+        console.info(`LineTruncation: ${tries} time truncation try for element:`, {
+          context: element,
+        });
         this.truncateWhenNecessary(element, ++tries);
       }
     }, 100);
   } else {
     this.setVisibility('visible');
     console.info(`[LineTruncation:truncateWhenNecessary()] Cannot retrieve item's clientHeight`, {
-      context: element
+      context: element,
     });
   }
 }
@@ -123,8 +124,10 @@ function appendElementNode(childNodes, rootElement, lines, lineHeight) {
       const childNodeType = childNode.nodeType;
 
       if (
-        (childNodeType === NODE_TYPE_ELEMENT && truncateElementNode(childNode, rootElement, lines, lineHeight)) ||
-        (childNodeType === NODE_TYPE_TEXT && truncateTextNode(childNode, rootElement, truncateHeight))
+        (childNodeType === NODE_TYPE_ELEMENT &&
+          truncateElementNode(childNode, rootElement, lines, lineHeight)) ||
+        (childNodeType === NODE_TYPE_TEXT &&
+          truncateTextNode(childNode, rootElement, truncateHeight))
       ) {
         return true;
       }
@@ -158,8 +161,10 @@ function truncateElementNode(element, rootElement, lines, lineHeight) {
       element.appendChild(childNode);
 
       if (
-        (childNodeType === NODE_TYPE_ELEMENT && truncateElementNode(childNode, rootElement, lines, lineHeight)) ||
-        (childNodeType === NODE_TYPE_TEXT && truncateTextNode(childNode, rootElement, truncateHeight))
+        (childNodeType === NODE_TYPE_ELEMENT &&
+          truncateElementNode(childNode, rootElement, lines, lineHeight)) ||
+        (childNodeType === NODE_TYPE_TEXT &&
+          truncateTextNode(childNode, rootElement, truncateHeight))
       ) {
         return true;
       }
@@ -177,7 +182,10 @@ function truncateElementNode(element, rootElement, lines, lineHeight) {
  * @param truncateHeight The desired height.
  */
 function truncateTextNode(textNode, rootElement, truncateHeight) {
-  textNode.textContent = textNode.textContent.replace(TRAILING_WHITESPACE_AND_PUNCTUATION_REGEX, '');
+  textNode.textContent = textNode.textContent.replace(
+    TRAILING_WHITESPACE_AND_PUNCTUATION_REGEX,
+    ''
+  );
   if (textNode.textContent === '') {
     return true;
   }
@@ -213,7 +221,10 @@ function truncateTextNodeByCharacter(textNode, rootElement, truncateHeight) {
 
   while (currentLength > 0) {
     // Trim off one trailing character and any trailing punctuation and whitespace.
-    textNode.textContent = textNode.textContent.replace(TRAILING_WHITESPACE_AND_PUNCTUATION_REGEX, '');
+    textNode.textContent = textNode.textContent.replace(
+      TRAILING_WHITESPACE_AND_PUNCTUATION_REGEX,
+      ''
+    );
 
     // When text content is empty, exit
     if (textNode.textContent === '') {
@@ -222,7 +233,10 @@ function truncateTextNodeByCharacter(textNode, rootElement, truncateHeight) {
 
     textNode.textContent = textNode.textContent.substring(0, currentLength - 1);
     // Add ellipsis before comparing height
-    textNode.insertAdjacentHTML('beforeend', `<span class="trunk-char">${ellipsisCharacter}</span>`);
+    textNode.insertAdjacentHTML(
+      'beforeend',
+      `<span class="trunk-char">${ellipsisCharacter}</span>`
+    );
     if (getContentHeight(rootElement) <= truncateHeight) {
       break;
     }
@@ -242,7 +256,10 @@ function truncateTextNodeByCharacter(textNode, rootElement, truncateHeight) {
 function addEllipsis(rootElement, truncateHeight) {
   const lastTextChildElement = getLastElementThatHasText(rootElement); // since our root element is a element, it has at least 1 child
 
-  lastTextChildElement.insertAdjacentHTML('beforeend', `<span class="trunk-char">${ellipsisCharacter}</span>`);
+  lastTextChildElement.insertAdjacentHTML(
+    'beforeend',
+    `<span class="trunk-char">${ellipsisCharacter}</span>`
+  );
 
   if (getContentHeight(rootElement) > truncateHeight) {
     lastTextChildElement.removeChild(lastTextChildElement.lastChild); // remove the ellipsis that we just inserted
@@ -258,5 +275,7 @@ function getLastElementThatHasText(element) {
   if (!element.hasChildNodes()) {
     throw Error('Must have child node');
   }
-  return element.lastChild.nodeType === NODE_TYPE_TEXT ? element : getLastElementThatHasText(element.lastChild);
+  return element.lastChild.nodeType === NODE_TYPE_TEXT
+    ? element
+    : getLastElementThatHasText(element.lastChild);
 }
