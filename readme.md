@@ -24,16 +24,20 @@ for front end
 import { truncate } from 'line-truncation';
 ```
 
-(browser support will be added in shortly)
-There are some tool functions that come with this library, some of them provide you more control in whether you want to execute the truncation
+(browser support will be added in shortly)<br />
 
-truncateWhenNecessary(element, tries = 1, maxTries = 10)
-// execute truncation in safe manner, so that you don't have to check if there is line height.
-// it's going to use retry logic to wait until you have all the pre-requisition of truncation
+**_There are some tool functions that come with this library, some of them provide you more control in whether you want to execute the truncation_**
+
+truncateWhenNecessary(element, tries = 1, maxTries = 10)<br />
+// execute truncation in safe manner, so that you don't have to check if there is line height.<br />
+// it's going to use retry logic to wait until you have all the pre-requisition of truncation<br />
 (when work with framework, you might want to put it in life cycle hook that the DOM render has initialized )
-truncate(element, lines, ellipsis = ellipsisCharacter, callback = val => {}) // truncate function  
-getContentHeight(element) // get element's content height exclude padding,margin etc.
-getLineHeight(element) // get element's line height, fallback to 1.2\*fontSize when there is no line height
+
+- truncate(element, lines, ellipsis = ellipsisCharacter, callback = val => {}) // truncate function
+
+- getContentHeight(element) // get element's content height exclude padding,margin etc.
+
+- getLineHeight(element) // get element's line height, fallback to 1.2\*fontSize when there is no line height
 
 ## How to use
 
