@@ -25,6 +25,15 @@ import { truncate } from 'line-truncation';
 ```
 
 (browser support will be added in shortly)
+There are some tool functions that come with this library, some of them provide you more control in whether you want to execute the truncation
+
+truncateWhenNecessary(element, tries = 1, maxTries = 10)
+// execute truncation in safe manner, so that you don't have to check if there is line height.
+// it's going to use retry logic to wait until you have all the pre-requisition of truncation
+(when work with framework, you might want to put it in life cycle hook that the DOM render has initialized )
+truncate(element, lines, ellipsis = ellipsisCharacter, callback = val => {}) // truncate function  
+getContentHeight(element) // get element's content height exclude padding,margin etc.
+getLineHeight(element) // get element's line height, fallback to 1.2\*fontSize when there is no line height
 
 ## How to use
 
@@ -33,19 +42,31 @@ For example, you have some text in [p]
 
 ```html
 <p id="example">
-  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nesciunt consequatur ipsum unde doloremque aliquid hic vitae
-  iure necessitatibus, maiores repellendus, quos dignissimos Quis necessitatibus quos voluptas nesciunt facere mollitia
-  cupiditate.
+  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nesciunt consequatur ipsum unde
+  doloremque aliquid hic vitae iure necessitatibus, maiores repellendus, quos dignissimos Quis
+  necessitatibus quos voluptas nesciunt facere mollitia cupiditate.
 </p>
 ```
 
 and then you could just simply get the element and call [LineTruncation.truncate()] with this element, your desired number of lines
 
 ```js
-var text = document.querySelector('p#example');
+import * as LineTruncation from 'line-truncation';
+
+var textElement = document.querySelector('p#example');
 var lineHeight = text.clientHeight;
 
-LineTruncation.lineTruncation(text, 2);
+LineTruncation.lineTruncation(textElement, 2);
+```
+
+sometimes, above code won't work because the function might executes before DOM initialized
+you can do, or write your own logic
+
+```js
+import * as LineTruncation from 'line-truncation';
+
+var textElement = document.querySelector('p#example');
+LineTruncation.truncateWhenNecessary(text);
 ```
 
 Additionally, ou can also provide the ellipsis character you would like to see as third parameter, also a handler function you wish to execute when truncation finish as fourth parameter
