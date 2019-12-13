@@ -28,10 +28,10 @@ import { truncate } from 'line-truncation';
 
 **_There are some tool functions that come with this library, some of them provide you more control in whether you want to execute the truncation_**
 
-truncateWhenNecessary(element, tries = 1, maxTries = 10)<br />
-// execute truncation in safe manner, so that you don't have to check if there is line height.<br />
-// it's going to use retry logic to wait until you have all the pre-requisition of truncation<br />
-(when work with framework, you might want to put it in life cycle hook that the DOM render has initialized )
+- truncateWhenNecessary(element, tries = 1, maxTries = 10)<br />
+  // execute truncation in safe manner, so that you don't have to check if there is line height.<br />
+  // it's going to use retry logic to wait until you have all the pre-requisition of truncation<br />
+  (when work with framework, you might want to put it in life cycle hook that the DOM render has initialized )
 
 - truncate(element, lines, ellipsis = ellipsisCharacter, callback = val => {}) // truncate function
 
@@ -56,6 +56,7 @@ and then you could just simply get the element and call [LineTruncation.truncate
 
 ```js
 import * as LineTruncation from 'line-truncation';
+// import { lineTruncation } from 'line-truncation';also works;
 
 var textElement = document.querySelector('p#example');
 var lineHeight = text.clientHeight;
