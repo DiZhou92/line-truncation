@@ -14,7 +14,7 @@ let ellipsisCharacter = '\u2026';
  * @param truncateHeight The desired height.
  * @param options The passed in options by the user.
  */
-export function truncate(rootElement, lines, ellipsis = ellipsisCharacter, callback = val => {}) {
+export function truncate(rootElement, lines, ellipsis = ellipsisCharacter, callback = val => { }) {
   if (!lines || !rootElement) {
     return;
   }
@@ -91,9 +91,9 @@ export function getLineHeight(element) {
   if (lineHeightComputedStyle === 'normal') {
     // Define a fallback for 'normal' value with 1.2 as a line-height
     // https://www.w3.org/TR/CSS21/visudet.html#normal-block
-    return parseFloat(window.getComputedStyle(element).fontSize, 10) * 1.2;
+    return parseFloat(window.getComputedStyle(element).fontSize) * 1.2;
   } else {
-    return parseFloat(lineHeightComputedStyle, 10);
+    return parseFloat(lineHeightComputedStyle);
   }
 }
 
@@ -212,11 +212,12 @@ function truncateTextNode(textNode, rootElement, truncateHeight) {
 
 /**
  * Truncate Text Node by remove the last character
- * @param textNode The child node in the root element.
+ * @param textNode The text node of last element of current root element.
+ * @param lastElement The last element of current root element.
  * @param rootElement The root node.
  * @param truncateHeight The desired height.
  */
-function truncateTextNodeByCharacter(textNode, rootElement, truncateHeight) {
+function truncateTextNodeByCharacter(textNode, lastElement, rootElement, truncateHeight) {
   let currentLength = textNode.textContent.length;
 
   while (currentLength > 0) {
@@ -233,7 +234,7 @@ function truncateTextNodeByCharacter(textNode, rootElement, truncateHeight) {
 
     textNode.textContent = textNode.textContent.substring(0, currentLength - 1);
     // Add ellipsis before comparing height
-    textNode.insertAdjacentHTML(
+    lastElement.insertAdjacentHTML(
       'beforeend',
       `<span class="trunk-char">${ellipsisCharacter}</span>`
     );
@@ -241,7 +242,7 @@ function truncateTextNodeByCharacter(textNode, rootElement, truncateHeight) {
       break;
     }
     // Take out ellipsis character for the next iteration
-    textNode.removeChild(textNode.lastChild);
+    lastElement.removeChild(lastElement.lastChild);
     currentLength = textNode.textContent.length;
   }
   return true;
@@ -263,7 +264,7 @@ function addEllipsis(rootElement, truncateHeight) {
 
   if (getContentHeight(rootElement) > truncateHeight) {
     lastTextChildElement.removeChild(lastTextChildElement.lastChild); // remove the ellipsis that we just inserted
-    truncateTextNodeByCharacter(lastTextChildElement, rootElement, truncateHeight);
+    truncateTextNodeByCharacter(lastTextChildElement.lastChild, lastTextChildElement, rootElement, truncateHeight);
   }
 }
 
